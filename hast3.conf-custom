@@ -1,0 +1,24 @@
+
+[General]
+NodeName=node1
+LogDir=/data/hast3/log
+Port=10015
+
+[Runtime]
+HAInterval=1.7
+DeadTime=220
+ServiceNumber=2
+MaxTryNum=5
+
+[Service0]
+ServiceName=sleep1
+StartCMD=/home/ljiliang/bin/sleep1 10000
+StopCMD=killall sleep1
+StateCMD=pgrep sleep1
+
+
+[Service1]
+ServiceName=sleep2
+StartCMD=/home/ljiliang/bin/sleep2 10000
+StopCMD=killall sleep2
+StateCMD=pgrep sleep2
