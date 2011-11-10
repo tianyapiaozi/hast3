@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+rm -rf /var/log/hast3
+
+exit 0

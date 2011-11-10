@@ -1,3 +1,30 @@
+/* 
+ * Copyright (C) 
+ * 2011 - Jiliang Li(tjulijiliang@gmail.com)
+ * This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * 
+ */
+
+/**
+ * @file communicate.c
+ * @brief 
+ * @author Li Jiliang<tjulijiliang@gmail.com
+ * @version 1.0
+ * @date 2011-11-09
+ */
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -13,6 +40,13 @@
 #include "hast3.h"
 #include "communicate.h"
 
+/**
+ * @brief creates the udp socket to receive multicast information
+ *
+ * @param env Env struct
+ *
+ * @return STATUS_OK on success, STATUS_SOCKET_ERR on failure
+ */
 int build_server(Env *env){
 	struct sockaddr_in addr;
 	struct ip_mreq mreq;
@@ -57,10 +91,25 @@ int build_server(Env *env){
 	return STATUS_OK;
 }
 
+/**
+ * @brief stop the udp server
+ *
+ * @param env Env struct
+ *
+ * @return 0 on success, other on failure
+ */
 int stop_server(Env *env){
-	close(env->server_fd);
+	return close(env->server_fd);
 }
 
+/**
+ * @brief compute the CRC checksum
+ *
+ * @param addr message address
+ * @param len message length
+ *
+ * @return checksum
+ */
 u_short checksum(u_short* addr, int len){
 	register int left = len;
 	register int sum = 0;
@@ -84,6 +133,14 @@ u_short checksum(u_short* addr, int len){
 	return answer;
 }
 
+/**
+ * @brief when the socket is readble, read the socket and checks its validity
+ *
+ * @param fd udp socket
+ * @param buf[] where the data should be stored
+ *
+ * @return STATUS_OK on success and STATUS_MSG_CORRUPT on failure
+ */
 int get_and_check_message(int fd, char buf[]){
 	struct sockaddr_in addr;
 	int len = 0, addrlen = sizeof(addr), header_len, entry_len;
@@ -108,6 +165,16 @@ int get_and_check_message(int fd, char buf[]){
 	return STATUS_OK;
 }
 
+/**
+ * @brief send a command to the specified node, i.e., ask it to start or stop the service
+ *
+ * @param env Env struct
+ * @param node name of the receiving node
+ * @param service name of the service
+ * @param cmd command
+ *
+ * @return STATUS_OK on success and STATUS_SOCKET_ERR on failure
+ */
 int send_cmd_to_node(Env *env, const char*node, const char *service, int cmd){
 	int fd, retry, sent;
 	unsigned sndcnt;

@@ -1,0 +1,9 @@
+Package:		hast3
+Version:		0:1.0
+Section:		utils
+Priority:		optional
+Architecture:	amd64
+Depends:		
+Installed-Size:	15
+Maintainer:		Jiliang li<tianyapiaozi@gmail.com>
+Description:	hast3(Heartbeat for AST3) v1.0.0

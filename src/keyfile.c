@@ -1,5 +1,6 @@
-/* Copyright (C) 
- * 2010 - Amal Cao
+/*
+ * Copyright (C) 
+ * 2011 - Jiliang Li(tjulijiliang@gmail.com)
  * This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -16,6 +17,13 @@
  * 
  */
 
+/**
+ * @file keyfile.c
+ * @brief 
+ * @author Li Jiliang<tjulijiliang@gmail.com
+ * @version 1.0
+ * @date 2011-11-09
+ */
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,11 +32,13 @@
 
 #define CMD_LEN		2048
 
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  initKeyfile
- *  Description:  Init the keyfile sruct using glib library.
- * ======================================================================
+/**
+ * @brief init the Keyfile struct using glib library
+ *
+ * @param keyfile pointer to Keyfile pointer
+ * @param config config file path
+ *
+ * @return 0
  */
 int
 initKeyfile(Keyfile **keyfile, const char *config)
@@ -49,13 +59,15 @@ initKeyfile(Keyfile **keyfile, const char *config)
 	return 0;
 }
 
-
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  getIntValue
- *  Description:  Get the integer value with the given key from the given 
- *                section in the keyfile.
- * ======================================================================
+/**
+ * @brief Get the integer value with the given key from the given section in the keyfile
+ *
+ * @param keyfile Keyfile pointer
+ * @param sec section name
+ * @param key key name
+ * @param value pointer to the result
+ *
+ * @return 0 on success and 1 on failure
  */
 int 
 getIntValue(Keyfile *keyfile, const char *sec, const char *key, int *value)
@@ -71,13 +83,15 @@ getIntValue(Keyfile *keyfile, const char *sec, const char *key, int *value)
 	return 0;
 }
 
-
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  setIntValue
- *  Description:  Set the integer value with the given key and section 
- *                into the keyfile.
- * ======================================================================
+/**
+ * @brief set the integer value with the given key and section into the keyfile
+ *
+ * @param keyfile Keyfile pointer
+ * @param sec section name
+ * @param key key name
+ * @param value value
+ *
+ * @return 0
  */
 int 
 setIntValue(Keyfile *keyfile, const char *sec, const char *key, int value)
@@ -87,12 +101,15 @@ setIntValue(Keyfile *keyfile, const char *sec, const char *key, int value)
 	return 0;
 }
 
-
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  getStrValue
- *  Description:  Get the string value with the given key...
- * ======================================================================
+/**
+ * @brief get the string value with the given key
+ *
+ * @param keyfile Keyfile pointer
+ * @param sec section name
+ * @param key key name
+ * @param value pointer to the result
+ *
+ * @return 0 on success and 1 on failure
  */
 int 
 getStrValue(Keyfile *keyfile, const char *sec, const char *key, char *value)
@@ -113,11 +130,15 @@ getStrValue(Keyfile *keyfile, const char *sec, const char *key, char *value)
 }
 
 
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  setStrValue
- *  Description:  Set the string value with the given key... 
- * ======================================================================
+/**
+ * @brief set the string value with the given key
+ *
+ * @param keyfile Keyfile pointer
+ * @param sec section name
+ * @param key key name
+ * @param value value
+ *
+ * @return 0
  */
 int 
 setStrValue(Keyfile *keyfile, const char *sec, const char *key, 
@@ -128,11 +149,17 @@ setStrValue(Keyfile *keyfile, const char *sec, const char *key,
 	return 0;
 
 }
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  getStrValueList
- *  Description:  Get the string list with the given key...
- * ======================================================================
+
+/**
+ * @brief get the string list with the given key
+ *
+ * @param keyfile Keyfile pointer
+ * @param sec section name
+ * @param key key name
+ * @param value where the result should be stored
+ * @param size size of the list
+ *
+ * @return 
  */
 int 
 getStrValueList(Keyfile *keyfile, const char *sec, const char *key, 
@@ -162,12 +189,16 @@ getStrValueList(Keyfile *keyfile, const char *sec, const char *key,
 
 }
 
-
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  setStrValueList
- *  Description:  Set the string list with the given key... 
- * ======================================================================
+/**
+ * @brief set the string list with the given key
+ *
+ * @param keyfile Keyfile pointer
+ * @param sec section name
+ * @param key key name
+ * @param value[] value
+ * @param size size of the list
+ *
+ * @return 0
  */
 int setStrValueList(Keyfile *keyfile, const char *sec, const char *key, 
 		const char * const value[], int size)
@@ -179,11 +210,15 @@ int setStrValueList(Keyfile *keyfile, const char *sec, const char *key,
 }
 
 
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  getFloatValue
- *  Description:  Get the double value with the given key ...
- * ======================================================================
+/**
+ * @brief get the double value with the given key
+ *
+ * @param keyfile Keyfile pointer
+ * @param sec section name
+ * @param key key name
+ * @param value where the result should be stored
+ *
+ * @return 0
  */
 int 
 getFloatValue(Keyfile *keyfile, const char *sec, const char *key, 
@@ -200,11 +235,15 @@ getFloatValue(Keyfile *keyfile, const char *sec, const char *key,
 	return 0;
 }
 
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  setFloatValue
- *  Description:  Set the double value with given key ...
- * ======================================================================
+/**
+ * @brief set the double value with given key
+ *
+ * @param keyfile Keyfile pointer
+ * @param sec section name
+ * @param key key name
+ * @param value value
+ *
+ * @return 0
  */
 int 
 setFloatValue(Keyfile *keyfile, const char *sec, const char *key, 
@@ -215,11 +254,13 @@ setFloatValue(Keyfile *keyfile, const char *sec, const char *key,
 	return 0;
 }
 
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  saveKeyfile
- *  Description:  Save the keyfile key-value pairs into the configure file.
- * ======================================================================
+/**
+ * @brief save the keyfile key-value pairs into the configure file
+ *
+ * @param keyfile Keyfile pointer
+ * @param config configure file path
+ *
+ * @return 0 on success and 1 on failure
  */
 int saveKeyfile(Keyfile *keyfile, const char *config)
 {
@@ -254,15 +295,14 @@ int saveKeyfile(Keyfile *keyfile, const char *config)
 	fclose(file);
 
 	return 0;
-
 }
 
-
-/* 
- * ===  FUNCTION  =======================================================
- *         Name:  destroyKeyfile
- *  Description:  Release the keyfile struct...
- * ======================================================================
+/**
+ * @brief release the keyfile struct 
+ *
+ * @param keyfile Keyfile pointer
+ *
+ * @return 0
  */
 int destroyKeyfile(Keyfile *keyfile)
 {

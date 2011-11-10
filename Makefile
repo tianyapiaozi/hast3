@@ -1,62 +1,57 @@
-CC ?= gcc
+INSTALL = cp
+BUILD_PATH = ./build/
 
-sqlite3 = 1
+MTYPE := $(shell uname -m)
 
-# check the release/debug flags
-ifeq ($(release), 1)
-	CFLAGS := -O2
-else
-	CFLAGS := -g -Wall -W -Wextra -Wshadow -Wconversion  -Wwrite-strings  -Wcast-qual
+ifeq ($(MTYPE), x86_64)
+	ARCH := amd64
+else 
+	ARCH := i386
 endif
 
-INCLUDE :=$(shell pkg-config --cflags  glib-2.0)
-LIBFLAGS := $(shell pkg-config --libs  glib-2.0)
+VERSION = 1.0
+RELEASE = 0
+DEBIAN_PACKAGE = hast3_$(VERSION)-$(RELEASE)_$(ARCH).deb
 
+All:	source
 
-CFILES := keyfile.c collect.c communicate.c config.c function.c log.c
-OBJS := $(subst .c,.o,$(CFILES))
-HAST3_BIN := hast3
-EXE := $(HAST3_BIN)
+.PHONY: source TAGS build_dir_debian pre_pkg_debian default_dir debian \
+	clean distclean doc
 
-# set the build time
-DATE := $(shell date +%F)
-CFLAGS += -D__BUILD_DATE__="\"$(DATE)\""
+default_dir:
+	mkdir -p bin
 
-# set the arch
-ARCH := $(shell uname -m)
-CFLAGS += -D__BUILD_ARCH__="\"$(ARCH)\""
+source: default_dir
+	cd src; make release=1; make install 
 
-# check if verbose
-ifeq ($(verbose), 1)
-	VERBOSE :=
-else
-	VERBOSE := @
-endif
+TAGS:
+	#find . -type f -print > cscope.files
+	cscope -Rqb
+	ctags -R --c-kinds=+p --fields=+S
 
-ALL:	$(HAST3_BIN) receiver
+build_dir_debian:
+	mkdir -p $(BUILD_PATH)/DEBIAN/
+	mkdir -p $(BUILD_PATH)/usr/bin/
+	mkdir -p $(BUILD_PATH)/etc/hast3/
 
-$(HAST3_BIN):	$(OBJS)	main.c
-	$(VERBOSE)$(CC) $(CFLAGS) $(INCLUDE) main.c $(OBJS) $(LIBFLAGS) -o $(HAST3_BIN) 
+pre_pkg_debian:	source build_dir_debian
+	$(INSTALL) debian/control.$(ARCH) $(BUILD_PATH)/DEBIAN/control
+	$(INSTALL) debian/postinst  $(BUILD_PATH)/DEBIAN
+	$(INSTALL) debian/postrm  $(BUILD_PATH)/DEBIAN
+	$(INSTALL) bin/* $(BUILD_PATH)/usr/bin/ 
+	$(INSTALL) etc/*.conf* $(BUILD_PATH)/etc/hast3/
 
-$(OBJS): %.o : %.c
-	$(VERBOSE)$(CC) $(CFLAGS) $(INCLUDE) -c $<  
-
-.PHONY : install clean tags distclean ALL
-
-install:
-	$(VERBOSE)cp -f $(AST3D) $(AST3D_TOOL) ../bin/
-
+debian:	pre_pkg_debian
+	cd $(BUILD_PATH); dpkg -b . ../$(DEBIAN_PACKAGE)
 
 clean:
-	$(VERBOSE)rm -rf $(EXE) $(OBJS) receiver main.o
+	rm -rf $(BUILD_PATH)
+	cd src; make clean
+	rm -f bin/*.run 	
+	rm -f *.deb *.rpm
 
-tags: *.c *.h	
-	ctags -R *
-	cscope -Rbq
+distclean:	clean
+	rm -f tags cscope*
 
-
-distclean: clean
-	rm -f cscope.* tags
-
-receiver: receiver.c
-	gcc receiver.c -o receiver
+doc:
+	doxygen Doxyfile

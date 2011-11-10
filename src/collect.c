@@ -1,8 +1,38 @@
+/* 
+ * Copyright (C) 
+ * 2011 - Jiliang Li(tjulijiliang@gmail.com)
+ * This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * 
+ */
+
+/**
+ * @file collect.c
+ * @brief functions related to collect process.
+ * @author Li Jiliang<tjulijiliang@gmail.com
+ * @version 1.0
+ * @date 2011-11-09
+ */
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/param.h>
+#include <sys/wait.h>
+
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
@@ -10,12 +40,27 @@
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <semaphore.h>
+#include <errno.h>
 
 #include "hast3.h"
 #include "communicate.h"
+#include "collect.h"
+
+static int get_service_status(Env *env,int service_index);
+static int collect_system(const char* cmd);
+
+extern sem_t mutex;
 
 pid_t collect_pid = 0;
 
+/**
+ * @brief The main loop of the collect process, which basically collects the status information of all the services and multicasts it to the other nodes
+ *
+ * @param env Env struct
+ *
+ * @return The function should loop forever and return denotes an error.
+ */
 static int collect_main_loop(Env *env){
 	int fd, i, sndcnt = 0, retry = 0, s;
 	int message_len;
@@ -65,13 +110,15 @@ static int collect_main_loop(Env *env){
 		/* get the status of each service */
 		for(i = 0; i < env->service_num; i++){
 			strcpy(message->data[i].service_name, env->services[i].name);
-			if(system(env->services[i].statecmd) == 0)
+			if(get_service_status(env, i) == 0)
 				status = Service_Running;
 			else{
+				sem_wait(&mutex);
 				if(env->services[i].tried_cnt > env->max_try_no)
 					status = Service_Failed;
 				else
 					status = Service_Nonrunning;
+				sem_post(&mutex);
 			}
 			message->data[i].cmd_or_status = status;
 		}
@@ -98,6 +145,13 @@ static int collect_main_loop(Env *env){
 	exit(EXIT_FAILURE);
 }
 
+/**
+ * @brief starts the collect process
+ *
+ * @param env Env struct
+ *
+ * @return 0 for success, other for failure.
+ */
 int start_collect(Env *env){
 	int in, out, i;
 
@@ -129,7 +183,48 @@ int start_collect(Env *env){
 
 }
 
+/**
+ * @brief stop the collect process
+ *
+ * @return 0 for sucess and other for failure
+ */
 int stop_collect(){
 	kill(collect_pid, SIGKILL);
 	return STATUS_OK;
+}
+
+/**
+ * @brief wrap function for system(3)
+ *
+ * @param cmd
+ *
+ * @return -1 on failure, and real exit code on success
+ */
+static int collect_system(const char* cmd){
+	int status;
+	errno = 0;
+	status = system(cmd);
+	if(status == -1)
+		return -1;
+	else
+		return WEXITSTATUS(status);
+}
+
+/**
+ * @brief get the status of specified service
+ *
+ * @param env Env struct
+ * @param service_index the index of service
+ *
+ * @return status
+ */
+static int get_service_status(Env *env,int service_index){
+	int i, status;
+	for(i = 0; i < MAX_TRY_NUM; i++){
+		status = collect_system(env->services[service_index].statecmd);
+		if(status != -1)
+			return status;
+		usleep(10);
+	}
+	return -1;
 }

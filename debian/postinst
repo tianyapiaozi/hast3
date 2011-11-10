@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+# Create the default dirs
+mkdir /var/log/hast3
+
+exit 0

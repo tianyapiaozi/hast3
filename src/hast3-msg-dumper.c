@@ -1,10 +1,27 @@
-/*
- * listener.c -- joins a multicast group and echoes all data it receives from
- *		the group to its stdout...
- *
- * Antony Courtney,	25/11/94
- * Modified by: Fr??????ic Bastien (25/03/04)
- * to compile without warning and work correctly
+/* 
+ * Copyright (C) 
+ * 2011 - Jiliang Li(tjulijiliang@gmail.com)
+ * This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * 
+ */
+/**
+ * @file hast3-msg-dumper.c
+ * @brief hast3-msg-dumper will dump the communication message between the nodes
+ * @author Li Jiliang<tjulijiliang@gmail.com
+ * @version 1.0
+ * @date 2011-11-09
  */
 
 #include <sys/types.h>
@@ -18,19 +35,18 @@
 
 #include "communicate.h"
 
-
 #define HELLO_PORT 10015
 #define HELLO_GROUP "225.0.0.37"
 #define MSGBUFSIZE 3256
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
      struct sockaddr_in addr;
      int fd, nbytes,addrlen;
      struct ip_mreq mreq;
      char msgbuf[MSGBUFSIZE];
 
-     u_int yes=1;            /*** MODIFICATION TO ORIGINAL */
+     u_int yes=1;
 
      /* create what looks like an ordinary UDP socket */
      if ((fd=socket(AF_INET,SOCK_DGRAM,0)) < 0) {
@@ -39,13 +55,11 @@ main(int argc, char *argv[])
      }
 
 
-/**** MODIFICATION TO ORIGINAL */
     /* allow multiple sockets to use the same PORT number */
     if (setsockopt(fd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(yes)) < 0) {
        perror("Reusing ADDR failed");
        exit(1);
        }
-/*** END OF MODIFICATION TO ORIGINAL */
 
      /* set up destination address */
      memset(&addr,0,sizeof(addr));
@@ -85,7 +99,6 @@ main(int argc, char *argv[])
 	  printf("node name:\t%s\n", ptr->nodename);
 	  printf("msg type:\t%d\n", ptr->type);
 	  printf("field num:\t%d\n", ptr->field_num);
-	  printf("%d %d\n", sizeof(Hast3_message), sizeof(Hast3_message_entry));
 	  entry = (Hast3_message_entry *)(msgbuf+sizeof(Hast3_message));
 	  for(i = 0; i < ptr->field_num; i++){
 		  printf("\tservice_name:\t%s\n", entry[i].service_name);

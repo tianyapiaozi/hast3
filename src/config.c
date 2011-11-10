@@ -1,3 +1,30 @@
+/* 
+ * Copyright (C) 
+ * 2011 - Jiliang Li(tjulijiliang@gmail.com)
+ * This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * 
+ */
+
+/**
+ * @file config.c
+ * @brief 
+ * @author Li Jiliang<tjulijiliang@gmail.com
+ * @version 1.0
+ * @date 2011-11-09
+ */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -6,6 +33,14 @@
 #include "hast3.h"
 #include "keyfile.h"
 
+/**
+ * @brief read the configuration
+ *
+ * @param env Env struct
+ * @param config config file path
+ *
+ * @return STATUS_OK on success and STATUS_CNF_ERR on failure
+ */
 int init_config(Env *env, const char *config){
 	Keyfile *keyfile;
 	int		integer, i;

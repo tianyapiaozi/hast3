@@ -1,5 +1,6 @@
-/* Copyright (C) 
- * 2010 - Amal Cao
+/* 
+ * Copyright (C) 
+ * 2011 - Jiliang Li(tjulijiliang@gmail.com)
  * This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -15,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  */
-
 #ifndef _KEYFILE_H_
 #define _KEYFILE_H_
 
